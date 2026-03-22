@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Briefcase, MapPin, Calendar, Sparkles, BookOpen } from 'lucide-react';
+import { Briefcase, MapPin, Calendar, Sparkles, BookOpen, Download, ExternalLink } from 'lucide-react';
+import { Button } from './ui/button';
 
 interface Experience {
   title: string;
@@ -10,6 +11,8 @@ interface Experience {
   type: 'work' | 'training';
   color: string;
   icon: typeof Briefcase;
+  /** Public path under /certificates/ — shows View + Download when set */
+  certificatePdf?: string;
 }
 
 const experiences: Experience[] = [
@@ -26,6 +29,7 @@ const experiences: Experience[] = [
     type: 'work',
     color: '#a855f7',
     icon: Briefcase,
+    certificatePdf: '/certificates/techno-hacks-internship.pdf',
   },
   {
     title: 'Machine Learning Made Easy',
@@ -40,8 +44,20 @@ const experiences: Experience[] = [
     type: 'training',
     color: '#f472b6',
     icon: BookOpen,
+    certificatePdf: '/certificates/lpu-machine-learning-certificate.pdf',
   },
 ];
+
+const downloadCertificate = (href: string) => {
+  const name = href.split('/').pop() || 'certificate.pdf';
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = name;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -266,6 +282,33 @@ const ExperienceSection = () => {
                               </motion.li>
                             ))}
                           </ul>
+
+                          {exp.certificatePdf && (
+                            <div className="mt-6 pt-5 border-t border-border/40 flex flex-wrap gap-2">
+                              <Button
+                                size="sm"
+                                className="gap-2 rounded-xl text-white border-0"
+                                style={{
+                                  background: `linear-gradient(135deg, ${exp.color}, ${exp.color}cc)`,
+                                  boxShadow: `0 0 18px ${exp.color}40`,
+                                }}
+                                onClick={() => window.open(exp.certificatePdf, '_blank', 'noopener,noreferrer')}
+                              >
+                                <ExternalLink size={16} />
+                                View certificate
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 rounded-xl border-border/70"
+                                style={{ borderColor: `${exp.color}55` }}
+                                onClick={() => downloadCertificate(exp.certificatePdf!)}
+                              >
+                                <Download size={16} />
+                                Download PDF
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </motion.div>
